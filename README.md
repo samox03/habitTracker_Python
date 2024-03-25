@@ -59,6 +59,7 @@ There are 5 predefined habits that the user can delete later.
 ## Running tests
 
 To run the test, navigate to the test folder and type 
+    
     pytest
 
 ## Usage
