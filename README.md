@@ -1,4 +1,4 @@
-# habitTracker_Python
+# A Habit Tracker CLI Tool build with Python
 Conception and construction of a CRUD habit tracker with some analytical functionality. 
 -> Backend + CLI 
 
