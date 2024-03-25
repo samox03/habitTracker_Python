@@ -35,29 +35,30 @@ Important: Make sure that Python 3.12 + is installed on your OS.
 You can download the latest version of Python from [this link](https://www.python.org/downloads/) - Make sure to check "ADD to path" in the Python installer. 
 
 After installing Python, proceed with the installation of the following libraries:
-
+- Questionary
 - Pandas
 - Tabulate
   
-### Packages for running tests
-
+### Testing
+To ensure the validity of the habit tracker, its habit tracking components and the analytics module get tested by a unit test suite.
 To run the tests, you will need the following packages installed: 
 Pytest - For testing functions:
 
     pip install -U pytest
 
 ## How To Run the Program
-Upon completing the installation of the necessary dependencies, download the files from this repository and store them in a separate folder. Access your command/terminal interface and navigate to the downloaded folder. Input the following command to run the program:
+Upon completing the installation of the necessary dependencies, download the files from this repository and store them in a separate folder. Access your terminal and navigate to the downloaded folder. Input the following command to run the program:
 
     python3 main.py
 
-Now the habit tracker CLI will be launched and you can follow the displayed options.
+Now the habit tracker CLI will be launched and you can follow the displayed options in the CLI.
 
+## Database
+There are 5 predefined habits that the user can delete later.
 
 ## Running tests
 
 To run the test, navigate to the test folder and type 
-
     pytest
 
 ## Usage
@@ -75,5 +76,11 @@ The user is asked to check off a habit at least once in the predefined periodici
 ### Show Habits 
 Shows a table of all the stored habits along with their information of Name, Description, Periodicity and the next Deadlinedate.
 
+### Analysis
+The following operations can get analysed by the habit tracker:
+  - return a list of all currently tracked habits.
+	- return a list of all habits with the same periodicity (daily, weekly).
+	- return the longest run streak of all defined habits (→ checks for highest nr in the streak_counter among all habits)
+	- return the longest streak for a given habit (→ checks the period_archive of a given habit)
 
 
