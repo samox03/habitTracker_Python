@@ -11,6 +11,8 @@ The core functionality of the habit tracker are:
 - Add a description of the habit
 - Define Periodicity of habits (Daily or weekly)
 - Mark a habit as completed
+- get a reminder if a habid period got missed
+- get some congratulation if a habit successfully got tracked for 1 month
 
 The tracker allows some analytical actions like:
 
