@@ -36,6 +36,7 @@ You can download the latest version of Python from [this link](https://www.pytho
 
 After installing Python, proceed with the installation of the following libraries:
 - Questionary
+  
   	pip install questionary
   
 - Tabulate
