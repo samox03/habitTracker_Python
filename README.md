@@ -29,16 +29,15 @@ Important: Make sure that Python 3.12 + is installed on your OS.
 
 - Python 3.12 +
 - Questionary
-- Pandas
 - Tabulate
-- 
 
 ## Installing
 You can download the latest version of Python from [this link](https://www.python.org/downloads/) - Make sure to check "ADD to path" in the Python installer. 
 
 After installing Python, proceed with the installation of the following libraries:
 - Questionary
-- Pandas
+  	pip install questionary
+  
 - Tabulate
   
 ### Testing
