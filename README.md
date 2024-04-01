@@ -30,6 +30,7 @@ Important: Make sure that Python 3.12 + is installed on your OS.
 - Python 3.12 +
 - Questionary
 - Tabulate
+- sqlite3 (already included in the python package)
 
 ## Installing
 You can download the latest version of Python from [this link](https://www.python.org/downloads/) - Make sure to check "ADD to path" in the Python installer. 
