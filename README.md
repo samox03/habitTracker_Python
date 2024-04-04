@@ -41,6 +41,7 @@ After installing Python, proceed with the installation of the following librarie
 	pip install questionary
   
 - datetime
+
 	pip install datetime
   
 ### Testing
