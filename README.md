@@ -9,10 +9,10 @@ The core functionality of the habit tracker are:
 - Add habit
 - Remove habit
 - Add a description of the habit
-- Define Periodicity of habits (Daily or weekly)
-- Mark a habit as completed
+- Define the tracking frequency of habits (Daily or weekly)
+- Checkoff a habit once it is done for its frenquence
 - get a reminder if a habid period got missed
-- get some congratulation if a habit successfully got tracked for 1 month
+- get some congratulation if a habit successfully got tracked for 2 weeks
 
 The tracker allows some analytical actions like:
 
@@ -23,14 +23,14 @@ The tracker allows some analytical actions like:
 
 ## Getting Started
 
-Important: Make sure that Python 3.12 + is installed on your OS.
+Make sure Python 3.12 + is installed on your OS.
 
 ## Dependencies
 
 - Python 3.12 +
 - Questionary
-- Tabulate
 - sqlite3 (already included in the python package)
+- datetime
 
 ## Installing
 You can download the latest version of Python from [this link](https://www.python.org/downloads/) - Make sure to check "ADD to path" in the Python installer. 
@@ -40,7 +40,8 @@ After installing Python, proceed with the installation of the following librarie
   
 	pip install questionary
   
-- Tabulate
+- datetime
+	pip install datetime
   
 ### Testing
 To ensure the validity of the habit tracker, its habit tracking components and the analytics module get tested by a unit test suite.
@@ -67,9 +68,7 @@ To run the test, navigate to the test folder and type
 
 ## Usage
 ### Add/Remove Habit 
-1. Add a habit
-2. Remove a habit
-3. Back to Main Menu
+Follow the instructions on your CLI after starting the programm. For navigation use the arrow-keys of your keyboard. Confirm with the enter-key.
 
 ### Modify/Update a Habit
 The user can edit the descriptiption or the habit frequency.
@@ -78,12 +77,12 @@ The user can edit the descriptiption or the habit frequency.
 The user is asked to check off a habit at least once in the predefined periodicity. He can do so by selecting this option from the main menu. A habit can just be checked off once in a period. The checking off of a habit gets registered by the period_counter by +1. The period counter resets to 0 if a habit gets missed in the preset period. In the period_archive the highest value of the period counter gets stored.
 
 ### Show Habits 
-Shows a table of all the stored habits along with their information of Name, Description, Periodicity and the next Deadlinedate.
+Shows a table of all the stored habits along with their information of Name, Description, Periodicity.
 
 ### Analysis
 The following operations can get analysed by the habit tracker:
   - return a list of all currently tracked habits.
-	- return a list of all habits with the same periodicity (daily, weekly).
-	- return the longest run streak of all defined habits (→ checks for highest nr in the streak_counter among all habits)
-	- return the longest streak for a given habit (→ checks the period_archive of a given habit)
+	- return a list of all habits with the same frequency (daily, weekly).
+	- return the longest run streak of all defined habits (→ checks for highest nr in the streak_count among all habits)
+	- return the longest streak for a given habit (→ checks the streak_archive of a given habit)
 
