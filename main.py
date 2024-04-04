@@ -3,10 +3,11 @@
 import questionary as qt
 # from tabulate import tabulate
 from datetime import date
-from functionality import get
+from functionality import utility
 from functionality.habit import Habit
-from functionality.get import frequency_change_confirmed, habit_delete_confirmed, select_one_habit_from_db, get_startdate
+from functionality.utility import description_change_confirmed, frequency_change_confirmed, habit_delete_confirmed, select_one_habit_from_db, get_startdate
 from functionality.db import connect_db, add_habit
+
 
 
 # This is the entry point of tha habit analysis tool. Here all the functionality is called that gets defined in the functionality subfolder.
@@ -51,20 +52,22 @@ def menu():
                 ]).ask()
         
         if second_choice == "Create a Habit":
-            habit_name = get.habit_name()
+            # db = connect_db()
+            habit_name = utility.habit_name()
             print("print:", habit_name)
-            habit_description = get.habit_description()
+            habit_description = utility.habit_description()
             print("print:", habit_description)
-            habit_frequency = get.habit_frequency()
-            print("print:", habit_frequency)
+            new_frequency = utility.habit_frequency()
+            print("print:", new_frequency)
             start_date = get_startdate()
             print("print:", start_date)
-            habit = Habit(habit_name, habit_description, habit_frequency)
+            habit = Habit(habit_name, habit_description, new_frequency, str(start_date))
+            habit.add()
+            print("Yay! You started a new Habit track! | Habit: " +habit_name, "| Description: " +habit_description, "| Frequency: " +new_frequency, "| Tracked since: " +str(start_date))
             # TODO: Solve the next two lines or delete:
-            print("Yay! You started a new Habit track! | Habit: " +habit_name, "| Description: " +habit_description, "| Frequency: " +habit_frequency, "| Tracked since: " +str(start_date))
-
-            add_habit(habit_name, habit_description, habit_frequency)
-            # habit.add()
+            menu()
+            # add_habit(habit_name, habit_description, new_frequency, start_date)
+            # add_habit(habit_name, habit_description, new_frequency, start_date)
             
         elif second_choice == "Delete a Habit":
             try:
@@ -79,6 +82,8 @@ def menu():
                 else:
                     print("\nNo such habit in the database :/ \n")
 
+            menu()
+
         elif second_choice == "Back to Main Menu":
             menu()
         
@@ -91,7 +96,7 @@ def menu():
             except ValueError: 
                 print("\nThe database is empty - please create a habit first.\n")
             else:
-                new_frequency = get.habit_frequency()
+                new_frequency = utility.habit_frequency()
                 if frequency_change_confirmed():
                     habit = Habit(habit_name, new_frequency)
                     habit.change_frequency()
@@ -99,10 +104,17 @@ def menu():
                     print(f"\nThe frequency of {habit_name} was not updated.\n")
 
 
-        # elif second_choice == "Edit Habit Description":
-        #     try:
-        
-        # # add content
+        elif second_choice == "Edit Habit Description":
+            try:
+                habit_name = select_one_habit_from_db()
+                 # throw ValueError if there are no habits in the database
+            except ValueError: 
+                print("\nThe database is empty - please create a habit first.\n")
+            else:
+                new_description = utility.habit_description()
+            if description_change_confirmed():
+                habit = Habit(habit_name, new_description)
+                habit.change_description()
                 
         # elif second_choice == "Check Off a habit from the list":
         #     try:

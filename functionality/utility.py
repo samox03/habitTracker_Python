@@ -83,8 +83,15 @@ def frequency_change_confirmed():
 
     :return: Return True if yes else returns False
     """
-    return qt.confirm("Changing the frequency of the habit will reset the current period as well as the streak_counter, would you like to continue?").ask()
+    return qt.confirm("Changing the frequency of the habit will reset the current period as well as the streak_count, would you like to continue?").ask()
 
+def description_change_confirmed():
+    """
+    Asks for description for a frequency change of a habit.
+
+    :return: Return True if yes else returns False
+    """
+    return qt.confirm("Changing the description of the habit will reset the current description. Would you like to continue?").ask()
 
 
 def habit_delete_confirmed(habit_name_to_delete):

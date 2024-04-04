@@ -73,29 +73,30 @@ def create_tables(db):
         db.commit()
 
 #TODO: Add Start_Date as input and output
-def add_habit(db, name, description, frequency):
+def add_habit(db, name, description, frequency, start_date):
         """ 
-        adds new habit to the db 
+        adds a new habit to the db with the input data of the user.
 
         :param db: connected sqlite database
         :param name: Name of the habit
+        :param description: Description of the habit
         :param frequency: Frequency of the habit (daily or weekly)
         :param start_date: Time of habit creation
         """
         # start_date = str(date.today())
         cur = db.cursor()
-        cur.execute("INSERT INTO habit_coredata VALUES(?, ?, ?)", 
-                    (name, description, frequency))
+        cur.execute("INSERT INTO habit_coredata (name, description, frequency, start_date) VALUES( ?, ?, ?, ?)", 
+                    (name, description, frequency, start_date))
         db.commit()
 
 def update_analysisdata(db, name, frequency, period_count, streak_count, streak_archive): 
         """
         updates habit tracking data in the db 
         """
-        
+
         cur = db.cursor()
-        cur.execute("INSERT INTO habit_analysisdata VALUES(?, ?, ?, ?, ?)", 
-                    (name, frequency, period_count, streak_count, streak_archive))
+        cur.execute("INSERT INTO habit_analysisdata VALUES(?, ?, ?, ?, ?, ?)", 
+                    (db, name, frequency, period_count, streak_count, streak_archive))
         db.commit()
 
    
@@ -174,12 +175,12 @@ def update_frequency(db, name, new_frequency):
        update_frequency_analysisdata(db, name, new_frequency)
 
 
-# TODO: - check_if_date_is_next_deadline(db, name, date, next_deadline) -> also triggers reminder, stores the period_coounter in the period_archive and resets period_counter == 0 of missed
+# TODO: - check_if_date_is_next_deadline(db, name, date, next_deadline) -> also triggers reminder, stores the period_coounter in the period_archive and resets period_count == 0 of missed
         
 
-# TODO: - period_counter(db, name, ...) -> counts each successfully checked-off period, sets 0 if a period got missed.
+# TODO: - period_count(db, name, ...) -> counts each successfully checked-off period, sets 0 if a period got missed.
 # TODO: - streak_archive(db, name, ...) -> stores the quantity of successfully reached habit-periods in a row until the habit gets interrupted.
-# TODO: - streak_counter() → counts +1 if the period_counter counts 2 for weekly habits or 15 for daily habits.
+# TODO: - streak_count() → counts +1 if the period_count counts 2 for weekly habits or 15 for daily habits.
 
 
 def get_streak_count(db, name):

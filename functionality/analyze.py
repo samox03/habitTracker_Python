@@ -102,7 +102,7 @@ def all_habit_list():
                     print("Sorry you already tracked that habit in the current period.")
                     return False
 
-            # If no checkoff exists, add the new date to the period_counter list
+            # If no checkoff exists, add the new date to the period_count list
             period_count.append(current_date)
             print("Cool another period success for this habit!")
             return True
@@ -111,10 +111,10 @@ def all_habit_list():
 # TODO: Delete Example:
 # Example usage
 startdate = datetime.strptime("2022-10-10", "%Y-%m-%d")
-period_counter = []
+period_count = []
 new_date = datetime.now()
 
-if check_weekly_checkoff(startdate, period_counter, new_date):
+if check_weekly_checkoff(startdate, period_count, new_date):
     print("New checkoff added successfully!")
 else:
     print("Checkoff already exists in the current period!")
@@ -124,36 +124,36 @@ else:
     
 
 
-def streak_control(db, name, frequency, period_counter, streak_counter, streak_archive):
+def streak_control(db, name, frequency, period_count, streak_count, streak_archive):
 
     """
     Checks if the user reached a 2 Weeks streak.
     :param db: connected sqlite database
     :param name: name of the habit
     :param frequency: frequency of the habit
-    :param period_counter: list of recent checkoff dates
-    :param streak_counter: counts every 2 Weeks streek with 1, gets set 0 if a period is missed.
-    :param streak_archive: stores all streaks, also if a missed period reset the streak_counter.              
+    :param period_count: list of recent checkoff dates
+    :param streak_count: counts every 2 Weeks streek with 1, gets set 0 if a period is missed.
+    :param streak_archive: stores all streaks, also if a missed period reset the streak_count.              
     """
 
     if frequency == 'daily':
-        if len(period_counter) == 2:
-            print(f"Cool! You reached a streak of '{len(period_counter)}' completed periods for the '{name}' habit!")
-            streak_counter += 1
+        if len(period_count) == 2:
+            print(f"Cool! You reached a streak of '{len(period_count)}' completed periods for the '{name}' habit!")
+            streak_count += 1
 
     elif frequency == 'weekly':
-        if len(period_counter) == 15:
-            print(f"Cool! You reached a streak of '{len(period_counter)}' completed periods for the '{name}' habit!")
-            streak_counter += 1
+        if len(period_count) == 15:
+            print(f"Cool! You reached a streak of '{len(period_count)}' completed periods for the '{name}' habit!")
+            streak_count += 1
 
 
 
 
-# TODO:    def period_checker(db, name, new_checkoff_date, period_counter()):
+# TODO:    def period_checker(db, name, new_checkoff_date, period_count()):
 
-# TODO:    def increment_streak_counter(db, self.name, date):
+# TODO:    def increment_streak_count(db, self.name, date):
 
-# TODO:    def add_streak_counter(db, self.name, self.frequency)
+# TODO:    def add_streak_count(db, self.name, self.frequency)
 
 
 
