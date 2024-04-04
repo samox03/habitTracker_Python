@@ -33,7 +33,7 @@ Make sure Python 3.12 + is installed on your OS.
 - datetime
 
 ## Installing
-You can download the latest version of Python from [this link](https://www.python.org/downloads/) - Make sure to check "ADD to path" in the Python installer. 
+Check your local python version and if required download the latest version of Python from [this link](https://www.python.org/downloads/) - [Make sure to check "ADD to path" in the Python installer.] 
 
 After installing Python, proceed with the installation of the following libraries:
 - Questionary
