@@ -38,11 +38,11 @@ Check your local python version and if required download the latest version of P
 After installing Python, proceed with the installation of the following libraries:
 - Questionary
   
-	pip install questionary
+		pip install questionary
   
 - datetime
 
-	pip install datetime
+		pip install datetime
   
 ### Testing
 To ensure the validity of the habit tracker, its habit tracking components and the analytics module get tested by a unit test suite.
