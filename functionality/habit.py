@@ -1,6 +1,6 @@
 from datetime import datetime, date
-from functionality.utility import frequency_change_confirmed, get_startdate, habit_delete_confirmed, habit_frequency, habit_name
-from functionality.db import add_habit, connect_db, habit_exists
+from functionality.utility import frequency_change_confirmation, get_startdate, habit_delete_confirmation, habit_frequency, habit_name
+from functionality.db import add_habit, connect_db, habit_exists, update_frequency_alltables
 
 
 # TODO: adjust database name end of line 6
@@ -52,8 +52,8 @@ class Habit:
         """
 
         self.frequency = new_frequency
-        if frequency_change_confirmed():
-            db.update_frequency(self.db, self.name, self.frequency)
+        if frequency_change_confirmation():
+            update_frequency_alltables(self.db, self.name, self.frequency)
             print(f"\nThe frequency of the Habit '{self.name.capitalize()}' got changed to '{self.frequency.capitalize()}'.\n")
         else: return
 
@@ -64,7 +64,7 @@ class Habit:
         """
 
         self.description = new_description
-        if frequency_change_confirmed():
+        if frequency_change_confirmation():
             db.update_description(self.db, self.name, self.description)
             print(f"\nThe description of the Habit '{self.name.capitalize()}' got changed to '{self.description}'.\n")
         else: return
@@ -74,7 +74,7 @@ class Habit:
         """
         Removes the habit from the habit_tracker database.
         """
-        if habit_delete_confirmed():
+        if habit_delete_confirmation():
             db.delete_habit(self.db, self.name)
             print(f"\n'{self.name.capitalize()}' got deleted from the database successfully.\n")
         else: return

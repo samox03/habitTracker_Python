@@ -6,29 +6,26 @@ Setup of all required actions and validations for a checkoff-event.
 
 
 from functionality.db import connect_db, connect_database, fetch_habits_to_choose_from
+import sqlite3
 
 
 
-
-def all_habit_list():
+def all_habits_list():
     """Display all habits from the database"""
+     
+    # connect_db()
+    conn = connect_db()
+
+    if conn is None:
+        return
 
     try:
-        import sqlite3
-        import datetime
-        import time
-        from datetime import datetime, timedelta
-
-        connect_db()
-
-# # TODO: Initialize the sqlite db called main.db
-#         sqliteConnection = sqlite3.connect('main.db.sqlite3')
-#         conn = sqliteConnection.cursor()
+        cursor = conn.cursor()
 
         # Fetch all habits from the habit database
         command = """SELECT * FROM habit_coredata"""
         conn.execute(command)
-        records = conn.fetchall()
+        records = cursor.fetchall()
         print("Here you see a list of ALL stored habits in the database:  ", len(records))
         print("\n")
 
@@ -36,33 +33,71 @@ def all_habit_list():
         for row in records:
             print(row)
 
-        sqliteConnection.commit()
+        # conn.commit()
+        # conn.close()
+
+
+    except sqlite3.Error as error:
+        print("Unable to read data from the database:", error)
+
+    finally: 
+        if conn: 
+            conn.close()
+
+
+
+def get_habits_by_frequency(frequency):
+    """Display all habits with either weekly OR daily frequency (depending on user input)"""
+    
+   # connect_db()
+    conn = connect_db()
+
+    if conn is None:
+            return
+
+    try:
+        cursor = conn.cursor()
+
+        # Fetch all habits from the habit database
+        command = """SELECT * FROM habit_tracker WHERE periodicity = ?"""
+        conn.execute(command, (frequency,))
+        records = cursor.fetchall()
+        print("Here you see a list of all stored habits with a ", +frequency, " frequency:  ", len(records))
+        print("\n")
+
+        # Print each row in the records
+        for row in records:
+            print(row)
+
+        else:
+            print("Sorry - no habits found with the specified frequency..")
+
+        conn.commit()
         conn.close()
 
     except sqlite3.Error as error:
         print("Unable to read data from the database:", error)
 
     finally:
-        if sqliteConnection:
-            sqliteConnection.close()
+        if conn:
+            conn.close()
 
 
+################################################################
+# ANLYSIS FUNCTIONALITY
+################################################################
+# Required: 
+    # db: habit_analysisdata
+    # name
+    # frequency
+    # start_date
+    # period_count
+    # streak_count
+    # streak_archive
+            
 
+# TODO: get frequency of the checkoff_habit
 
-
-
-# TODO get frequency of the checkoff_habit
-
-    # -> unnoetig, es kann einfach gleich der library befehl genutzt werden. 
-    # def checkoff_date(db, self.name):
-    #     """
-    #     :param db: connected sqlite database
-    #     :param name: name of the habit that is requested to be checked off
-    #     :param date_checkoff_try: a variable only for shortterm use of the calculation.
-    #     :return: date of the day
-    #     """
-    #     date_checkoff_try = datetime.now()
-    #     return name.date_checkoff_try
 
     def period_checker(db, name, frequency, period_count):
         """

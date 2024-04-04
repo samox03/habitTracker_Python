@@ -8,31 +8,30 @@ from datetime import date, timedelta
 
 
 # set up of the db connection
-def connect_db(name="main.db"):
+def connect_db(db_name="main.db"):
         """
         create a database connection to the SQLite database
         specified by db_file
 
-        :param name: Name of the database to create or connect with (default main.db)
+        :param db_name: Name of the database to create or connect with (default main.db)
         :return: Returns the database connection
         """
 
-        db = sqlite3.connect(name)
+        db = sqlite3.connect(db_name)
+
+        # TODO: Muss dies hier drin stehen oder werden die dann immer wieder auf 0 gesetzt?
         create_tables(db)
-
-        try:
-                conn = sqlite3.connect(name)
-                return conn
-        except Error as e:
-                print("Connection to database failed: ", e)    
+  
         
-        return db
-    
-#     if conn:
-#         conn.close()
-   
+        try:
+                conn = sqlite3.connect(db_name)
+                return conn
+        
+        except sqlite3.Error as e:
+                print("Connection to database failed: ", e)
+                return None
 
-
+        # return db
 
 def create_tables(db):
         """
@@ -72,7 +71,6 @@ def create_tables(db):
 
         db.commit()
 
-#TODO: Add Start_Date as input and output
 def add_habit(db, name, description, frequency, start_date):
         """ 
         adds a new habit to the db with the input data of the user.
@@ -139,9 +137,7 @@ def fetch_habits(db):
         return [i[0].capitalize() for i in set(data)] if len(data) > 0 else None
 
 
-
-# Due to the double storage of the frequency attribute, with a frequency update both tables need to be ubdated:
-def update_frequency_coredata(db, name, new_frequency):
+def update_frequency_alltables(db, name, new_frequency):
         """ 
         resets the frequency of a habit and resets its streak counters 
         :param db: connected sqlite database
@@ -155,28 +151,38 @@ def update_frequency_coredata(db, name, new_frequency):
         db.commit()
         reset_analysisdata(db, name)
 
-def update_frequency_analysisdata(db, name, new_frequency):
-        """ 
-        resets the frequency of a habit and resets its streak counters 
-        :param db: connected sqlite database
-        :param name: Name of the habit
-        :param new_frequency: new frequency that shall be applied
-        """
-        cur = db.cursor()
-        query = "UPDATE analysis_data SET frequency = ? WHERE name = ?"
-        data = (new_frequency, name)
-        cur.execute(query, data)
-        db.commit()
+# die folgenden 2 Funktionen sollten bereits mit der update_frequency_alltables() funktion abgedeckt sein
+# def update_frequency_analysisdata(db, name, new_frequency):
+#         """ 
+#         resets the frequency of a habit and resets its streak counters 
+#         :param db: connected sqlite database
+#         :param name: Name of the habit
+#         :param new_frequency: new frequency that shall be applied
+#         """
+#         cur = db.cursor()
+#         query = "UPDATE analysis_data SET frequency = ? WHERE name = ?"
+#         data = (new_frequency, name)
+#         cur.execute(query, data)
+#         db.commit()
 
-# combines the update of both databases due to the double storing of the frequency attribute
-# TODO: This migth be optimized later
-def update_frequency(db, name, new_frequency):
-       update_frequency_coredata(db, name, new_frequency)
-       update_frequency_analysisdata(db, name, new_frequency)
+# # 
+# # TODO: This migth be optimized later, if time is left
+# def update_frequency(db, name, new_frequency):
+#        """
+#        Due to the double storage of the frequency attribute,
+#        with a frequency update both tables need to be updated.
+#        This function combines the update of both databases.
+# #      TODO: Does it need a return statement?
+#        """
+#        update_frequency_coredata(db, name, new_frequency)
+#        update_frequency_analysisdata(db, name, new_frequency)
+              
 
 
 # TODO: - check_if_date_is_next_deadline(db, name, date, next_deadline) -> also triggers reminder, stores the period_coounter in the period_archive and resets period_count == 0 of missed
-        
+
+
+
 
 # TODO: - period_count(db, name, ...) -> counts each successfully checked-off period, sets 0 if a period got missed.
 # TODO: - streak_archive(db, name, ...) -> stores the quantity of successfully reached habit-periods in a row until the habit gets interrupted.

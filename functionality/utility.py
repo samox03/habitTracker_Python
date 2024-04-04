@@ -77,7 +77,7 @@ def habit_frequency():
                      choices=["Daily", "Weekly"]).ask().lower()
 
 
-def frequency_change_confirmed():
+def frequency_change_confirmation():
     """
     Asks for confirmation for a frequency change of a habit.
 
@@ -85,7 +85,7 @@ def frequency_change_confirmed():
     """
     return qt.confirm("Changing the frequency of the habit will reset the current period as well as the streak_count, would you like to continue?").ask()
 
-def description_change_confirmed():
+def description_change_confirmation():
     """
     Asks for description for a frequency change of a habit.
 
@@ -94,7 +94,7 @@ def description_change_confirmed():
     return qt.confirm("Changing the description of the habit will reset the current description. Would you like to continue?").ask()
 
 
-def habit_delete_confirmed(habit_name_to_delete):
+def habit_delete_confirmation(habit_name_to_delete):
     """
     Requests the user to confirm whether they like to delete the habit or not.
     :return: Return True if yes else returns False
