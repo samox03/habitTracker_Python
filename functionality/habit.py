@@ -1,6 +1,6 @@
 from datetime import datetime, date
 from functionality.utility import frequency_change_confirmation, get_startdate, habit_delete_confirmation, habit_frequency, habit_name
-from functionality.db import add_habit, connect_db, habit_exists, update_frequency_alltables
+from functionality.db import add_habit, connect_db, delete_habit, habit_exists, update_frequency_alltables
 
 
 # TODO: adjust database name end of line 6
@@ -14,9 +14,8 @@ class Habit:
         self.start_date = start_date
         self.period_count = []
         self.streak_count = 0
-        self.streak_archive = 0
+        self.streak_archive = []
         
-
 
 # the following functionality shall be implemented here:
     # create_new_habit
@@ -29,7 +28,6 @@ class Habit:
         # Also the period_count checks if the startday of the streaktime minus the date of the day is 4 (weekly habits) or 30 (daily habits).
         # If the latter calculation is true, but there was noc streak that day, then the user gets a reminding message that the streak was interrupted.
 
-#TODO: confused: gibt es add_habit 2 mal??? Einmal hier einmal in db.py
 # create_new_habit
     def add(self):
         """
@@ -57,7 +55,7 @@ class Habit:
             print(f"\nThe frequency of the Habit '{self.name.capitalize()}' got changed to '{self.frequency.capitalize()}'.\n")
         else: return
 
-
+#TODO: update_description -> not implemented yet
     def change_description(self, new_description):
         """
         Changes the habit frequency.
@@ -65,7 +63,7 @@ class Habit:
 
         self.description = new_description
         if frequency_change_confirmation():
-            db.update_description(self.db, self.name, self.description)
+            update_description(self.db, self.name, self.description)
             print(f"\nThe description of the Habit '{self.name.capitalize()}' got changed to '{self.description}'.\n")
         else: return
 
@@ -75,18 +73,43 @@ class Habit:
         Removes the habit from the habit_tracker database.
         """
         if habit_delete_confirmation():
-            db.delete_habit(self.db, self.name)
+            delete_habit(self.db, self.name)
             print(f"\n'{self.name.capitalize()}' got deleted from the database successfully.\n")
         else: return
 
 
-# TODO: implement the streak management.... -> im counter oder analyze file
-# def increment_streak(self):
-# def reset_streak(self):
-# def update_streak(self):
+################################################################
+# Check-off a habit (hier in der Klasse definieren???)
+        #TODO: Decide where to implement the checkoff-event -> functional
+################################################################
 
-# checkoff_habit_event
-#    def checkoff(self):
+    def checkoff_event_handler(self):
         """
-        Checks the frequency of the habit .......
+        gets triggered once the user tries to checkoff a habit
+        - first habit name needs to be choosen from all displayed habits
+        - date_now() needs to be compared with the period_counter: Does the date lays inside an new, unchecked period?
+        - if true: add checkoff_date to period_counter list (-> increment_streak())
+
+            -> also calculate new next_deadline date
+        - if true: check with the period_success_checker the period_counter list: 
+                -> given the according frequency, is a new streak achieved?
+                    -> if yes: streak_count +=1
+                    -> else: continue
         """
+
+    def frequency_in_time_checker(self):
+        """
+        checks if a habit got a checkoff in time of the set period:
+            -> startdate + frequency -> next_deadline
+            -> if next_deadline = lays in the past
+                -> display fail message
+                -> add streak_count to streak_archive
+                -> reset streak_count
+                -> reset period_count
+        """
+
+
+
+       
+
+

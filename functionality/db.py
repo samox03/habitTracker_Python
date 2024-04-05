@@ -1,7 +1,7 @@
 
 import sqlite3
 from sqlite3 import Error
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 
 # The database module setsup the database, creates 2 database tables, and stores and returns data.
 # How the data is accessed according to the user input is defined here.
@@ -60,12 +60,13 @@ def create_tables(db):
 
 #create table called habit_analysisdata with fluid data
         cur.execute(''' CREATE TABLE IF NOT EXISTS habit_analysisdata (
-                name TEXT PRIMARY KEY,
+                id INTEGER PRIMARY KEY,
+                name TEXT,
                 start_date DATE,
                 frequency TEXT,
-                period_count LIST OF DATES,
+                period_count TEXT,
                 streak_count INT DEFAULT 0,
-                streak_archive INT DEFAULT 0,
+                streak_archive TEXT,
                 FOREIGN KEY (name) REFERENCES habit_coredata(name)
         )''')
 
@@ -98,6 +99,39 @@ def update_analysisdata(db, name, frequency, period_count, streak_count, streak_
         db.commit()
 
    
+def all_habits_list():
+    """Display all habits from the database"""
+     
+    conn = connect_db()
+
+    if conn is None:
+        return
+
+    try:
+        cursor = conn.cursor()
+
+        # Fetch all habits from the habit database
+        command = """SELECT * FROM habit_coredata"""
+        conn.execute(command)
+        records = cursor.fetchall()
+        print("Here you see a list of ALL stored habits in the database:  ", len(records))
+        print("\n")
+
+        # Print each row in the records
+        for row in records:
+            print(row)
+        
+        conn.commit()
+        conn.close()
+
+
+    except sqlite3.Error as error:
+        print("Unable to read data from the database:", error)
+
+    finally: 
+        if conn: 
+            conn.close()
+
 
 def habit_exists(db, name):
         """ 
@@ -135,6 +169,43 @@ def fetch_habits(db):
         cur.execute("SELECT habit FROM habit_coredata")
         data = cur.fetchall()
         return [i[0].capitalize() for i in set(data)] if len(data) > 0 else None
+
+
+def get_habits_by_frequency(frequency):
+    """Display all habits with either weekly OR daily frequency (depending on user input)"""
+    
+    conn = connect_db()
+
+    if conn is None:
+            return
+
+    try:
+        cursor = conn.cursor()
+
+        # Fetch all habits from the habit database
+        command = """SELECT * FROM habit_tracker WHERE frequency = ?"""
+        conn.execute(command, (frequency,))
+        records = cursor.fetchall()
+        print("Here you see a list of all stored habits with a ", +frequency, " frequency:  ", len(records))
+        print("\n")
+
+        # Print each row in the records
+        for row in records:
+            print(row)
+
+        else:
+            print("Sorry - no habits found with the specified frequency..")
+
+        conn.commit()
+        conn.close()
+
+    except sqlite3.Error as error:
+        print("Unable to read data from the database:", error)
+
+    finally:
+        if conn:
+            conn.close()
+
 
 
 def update_frequency_alltables(db, name, new_frequency):
@@ -183,42 +254,9 @@ def update_frequency_alltables(db, name, new_frequency):
 
 
 
-
-# TODO: - period_count(db, name, ...) -> counts each successfully checked-off period, sets 0 if a period got missed.
-# TODO: - streak_archive(db, name, ...) -> stores the quantity of successfully reached habit-periods in a row until the habit gets interrupted.
-# TODO: - streak_count() → counts +1 if the period_count counts 2 for weekly habits or 15 for daily habits.
-
-
-def get_streak_count(db, name):
-        """ 
-        returns the current streak count of the specified habit 
-        """
-        cur = db.cursor()
-        query = "SELECT streak_count FROM habit_analysisdata WHERE habit = ?"
-        cur.execute(query, (name,))
-        streak_count = cur.fetchall()
-        return streak_count[0][0]
-
-
-def update_habit_streak_count(db, name, time=None):
-        """
-        Wenn der streak_checker einen streak registriert hat, wird dieser im streak_count hinzugefuegt.
-        """
-        cur = db.cursor()
-        query = "UPDATE habit_coredata SET streak_count += 1 WHERE name = ?"
-        cur.execute(query, (name,))
-        db.commit()
-
-def update_habit_period_count(db, name, time=None):
-        """
-        Wenn der period_checker ein check_off_event fuer die aktuelle Periode registriert,
-        wird dieser im period_count als Datum hinzugefuegt.
-        """
-        cur = db.cursor()
-        query = "UPDATE habit_coredata SET period_count = ? WHERE name = ?"
-        data = query.append(date.now())
-        cur.execute(data, (name,))
-        db.commit()
+################################################################
+# For Analysis purpose: 
+################################################################
 
 def fetch_habit_frequency(db, name):
         """ returns the specified frequency of a habit """
@@ -229,10 +267,127 @@ def fetch_habit_frequency(db, name):
         return data[0][0]
 
 
+def get_streak_count(db, name): 
+        """ Returns the current streak count of the specified habit """ 
+        cur = db.cursor() 
+        query = "SELECT streak_count FROM habit_analysisdata WHERE name = ?" 
+        cur.execute(query, (name,)) 
+        streak = cur.fetchone() 
+        streak_count = streak[0] if streak else None 
+        return streak_count
+
+def get_all_streak_counts(db):
+        """ Returns all streak counts of habits """
+        cur = db.cursor()
+        query = "SELECT streak_count, habit_name FROM habit_analysisdata" 
+        cur.execute(query)
+        streaks = cur.fetchall()
+        streak_counts = [(streak[0], streak[1]) for streak in streaks] 
+        return streak_counts
+
+
+def increase_streak_count(db, name):
+        """ 
+        Adds +1 to the streak_count of given habit.
+        """
+        cur = db.cursor()
+        query = "UPDATE habit_analysisdata SET streak_count = streak_count + 1 WHERE name = ?"
+        cur.execute(query, (name,))
+        return "Streak count increased by 1 for habit: " +name
+
+
+def get_period_count(db, name): 
+        """ 
+        Returns the period_count of given habit. 
+        """ 
+        cur = db.cursor() 
+        query = "SELECT period_count FROM habit_analysisdata WHERE name = ?" 
+        cur.execute(query, (name,)) 
+        period_count = [] 
+        for row in cur: period_count.append(row[0]) 
+        return period_count
+
+
+def reset_period_count(db, name):
+        """ 
+        Resets period_count to 0.
+        """
+        cur = db.cursor()
+        query = "UPDATE habit_analysisdata SET period_count = 0 WHERE name = ?"
+        cur.execute(query, (name,))
+        return None
+      
+
+def get_streak_archive(db, name):
+        """ 
+        returns the current streak count of the specified habit 
+        """
+        cur = db.cursor()
+        query = "SELECT streak_archive FROM habit_analysisdata WHERE name = ?"
+        cur.execute(query, (name,))
+        streak_archive = cur.fetchall()
+        return streak_archive[0][0]
+
+def get_all_streak_archives(db):
+        """ returns all streak archives of habits """
+        cur = db.cursor()
+        query = "SELECT streak_archive, habit_name FROM habit_analysisdata" 
+        cur.execute(query)
+        streaks = cur.fetchall()
+        streak_archives = [(streak[0], streak[1]) for streak in streaks] 
+        return streak_archives
+
+
+def update_streak_archive(db, name):
+        """
+        If a period is missed and the current streak period needs to be reset, 
+        the streak_count gets stored as a nr in streak_archive (= list).
+        """   
+        cur = db.cursor() 
+        cur.execute("SELECT streak_archive FROM habit_coredata WHERE name = ?", (name,))
+
+        query = "SELECT streak_count FROM habit_analysisdata WHERE name = ?"
+        cur.execute(query, (name,))
+        streak_count = cur.fetchall()
+        new_period_count = streak_count[0][0]
+
+        query = "UPDATE habit_coredata SET streak_archive = ? WHERE name = ?"
+        cur.execute(query, (new_period_count, name))
+        db.commit()
+
+
+def update_streak_count(db, name, time=None):
+        """
+        If the streak_checker registered a new streak, the streak_count increases +1.
+        """
+        cur = db.cursor()
+        query = "UPDATE habit_coredata SET streak_count += 1 WHERE name = ?"
+        cur.execute(query, (name,))
+        db.commit()
+
+
+def update_period_count(db, name, time=None):
+        """
+        Wenn der period_checker ein check_off_event fuer die aktuelle Periode registriert,
+        wird dieser im period_count als Datum hinzugefuegt.
+        """
+        cur = db.cursor()
+        cur.execute("SELECT period_count FROM habit_coredata WHERE name = ?", (name,))
+        result = cur.fetchone()
+        if result:
+            new_period_count = f"{result[0]}, {datetime.datetime.now()}"
+        else:
+            new_period_count = f"{datetime.datetime.now()}"
+        query = "UPDATE habit_coredata SET period_count = ? WHERE name = ?"
+        cur.execute(query, (new_period_count, name))
+        db.commit()
+
+
 def reset_analysisdata(db, name):
         """
         Accesses the analysis data table, enters the object of {name} and resets the counter data.
         """
+        # TODO: Sollte zuerst streak_count ins Streak_archive gespeichert werden.
         cur = db.cursor()
         query = "UPDATE habit_coredata SET period_count = 0, streak_count = 0 WHERE name = ?"
         cur.execute(query, (name,))
