@@ -54,7 +54,7 @@ class Habit:
             print(f"\nThe frequency of the Habit '{self.name.capitalize()}' got changed to '{self.frequency.capitalize()}'.\n")
         else: return
 
-#TODO: update_description -> not implemented yet
+#TODO: update_description -> additional, not implemented yet
     # def change_description(self, new_description):
     #     """
     #     Changes the habit frequency.
@@ -79,25 +79,26 @@ class Habit:
 
 ################################################################
 # Check-off a habit (hier in der Klasse definieren???)
-        #TODO: Decide where to implement the checkoff-event -> functional
+        #TODO: Decide where to implement the checkoff-event
 ################################################################
 
-    def checkoff_event_handler(self):
-        """
-        Gets triggered when the user tries to check off a habit.
-        - first habit name needs to be choosen from all displayed habits
-        - date_now() needs to be compared with the period_counter: Does the date lays inside an new, unchecked period?
-        - if true: add checkoff_date to period_counter list (-> increment_streak())
+    # def checkoff_event_handler(self):
+        # """
+        # Gets triggered when the user tries to check off a habit.
+        # - first habit name needs to be choosen from all displayed habits
+        # - date_now() needs to be compared with the period_counter: Does the date lays inside an new, unchecked period?
+        # - if true: add checkoff_date to period_counter list (-> increment_streak())
 
-            -> also calculate new next_deadline date
-        - if true: check with the period_success_checker the period_counter list: 
-                -> given the according frequency, is a new streak achieved?
-                    -> if yes: streak_count +=1
-                    -> else: continue
-        """
+        #     -> also calculate new next_deadline date
+        # - if true: check with the period_success_checker the period_counter list: 
+        #         -> given the according frequency, is a new streak achieved?
+        #             -> if yes: streak_count +=1
+        #             -> else: continue
+        # """
+    # -> aktuell im analyze.py file
 
 
-    def check_period_missed():
+    def check_period_missed(self):
         """
         Is called when the user starts the programm.
         Usecase: Check if the user keeps track on checking off habits in the choosen time.
@@ -114,6 +115,7 @@ class Habit:
                 -> reset period_count
 
         """
+
 
         current_date = datetime.now()
     

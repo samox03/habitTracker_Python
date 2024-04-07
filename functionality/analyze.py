@@ -150,7 +150,7 @@ def streak_success_checker(name):
 
 #         frequency = fetch_habit_frequency(name)
 #   
-## -> imp;ementiert in der habit class
+## -> implementiert in der habit class
 
 
 

@@ -47,6 +47,8 @@ def menu():
     offer a good usability for the habit tracker.
     """
 
+# TODO: check_period_missed() hier einfuegen
+
  # Shows 6 choices for the user to choose from
     choice = qt.rawselect(
         "What do you want to do?",
@@ -137,8 +139,6 @@ def menu():
                 print("\nPlease first create a habit to use the check-off function\n")
 
                 
-        # TODO: add content
-
         elif choice == "See all stored Habits (All or Sort by Frequency)":
         # user can choose from 3 sub choices
             second_choice = qt.select(
