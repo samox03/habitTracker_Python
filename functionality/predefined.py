@@ -27,7 +27,7 @@ def tablecreation():
         # len records of Habits exists
         conn.execute("SELECT * FROM habits").fetchall()
 
-# test TODO: ->delete or apply
+
         habits_data = [('Workout', 'Care about your body :)', 'Daily', '2024-03-20', ['2024-03-21', '2024-03-22', '2024-03-24', '2024-03-25', '2024-03-26', '2024-03-27', '2024-03-28', '2024-03-29', '2024-03-30', '2024-03-31', '2024-04-01', '2024-04-02', '2024-04-03', '2024-04-04'], 1, [0, 0, 1]),
               ('WaterPlants', 'Check the health of the plants', 'Weekly', '2024-01-01', ['2024-04-14', '2024-04-19'], 3, [2, 1, 5]),
               ('TidyUp', 'Bringing away old glass, cleaning the place', 'Weekly', '2024-02-14', ['2024-03-28', '2024-04-04'], 1, [3, 2, 5]),

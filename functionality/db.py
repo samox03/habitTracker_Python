@@ -270,7 +270,7 @@ def update_frequency_alltables(db, name, new_frequency):
 #        Due to the double storage of the frequency attribute,
 #        with a frequency update both tables need to be updated.
 #        This function combines the update of both databases.
-# #      TODO: Does it need a return statement?
+# #      TODO: return statement?
 #        """
 #        update_frequency_coredata(db, name, new_frequency)
 #        update_frequency_analysisdata(db, name, new_frequency)
@@ -278,9 +278,6 @@ def update_frequency_alltables(db, name, new_frequency):
 
 # def update_description(): -> development paused.. maybe if time is left..
       
-
-# TODO: - check_if_date_is_next_deadline(db, name, date, next_deadline) -> also triggers reminder, stores the period_coounter in the period_archive and resets period_count == 0 of missed
-
 
 
 ################################################################
