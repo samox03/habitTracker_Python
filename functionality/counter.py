@@ -58,3 +58,62 @@ def add_event(self, db, date: str=None):
 #######################################
     
 
+#######################################
+
+#######################################
+#######################################
+#######################################
+#######################################
+#######################################
+
+
+# TODO: An richtige Codestelle einfuegen, hier nur test purpose
+    
+    def check_period_missed():
+        """
+        Is called when the user starts the programm.
+        Usecase: Check if the user keeps track on checking off habits in the choosen time.
+        
+        - iterates through the entire database and checks for each habit:
+            - what is the period in which the habit should be checked off according to the start date and the frequency.
+            - Does the last entry in the period_counter lays in the current or last period?
+            - Is the last period unchecked but gone?
+
+        If a habit period has expired, a reminding message is displayed on the CLI.
+
+        """
+
+        current_date = datetime.now()
+    
+        # Fetch all habits from the database   
+        # TODO: implement fetch_all_habits 
+        habits = fetch_all_habits()  
+    
+
+        for habit in habits:
+        # Check current habit frequency and get period count
+            frequency = habit.get("frequency")
+            period_count = habit.get("period_count")
+
+            if frequency == "weekly":
+            # Calculate the start of the current period based on start_date from the habit
+                start_date = datetime.strptime(habit.get("start_date"), '%Y-%m-%d %H:%M:%S.%f')
+                period_length = 7  # For weekly frequency
+                weeks_passed = (current_date - start_date).days // period_length
+
+            # Check if the current date is in a new period
+            if len(period_count) == 0 or period_count[-1] != current_date.strftime('%Y-%m-%d %H:%M:%S.%f'):
+                if (current_date - start_date).days >= (weeks_passed * period_length):
+                    period_count.append(current_date.strftime('%Y-%m-%d %H:%M:%S.%f'))
+                else:
+                    print(f"WARNING: You missed checking off {habit.get('name')}. Its Period expired without any checkoff :/ .")
+                    
+
+            elif frequency == "daily":
+                # Check if the current date is in a new period (daily frequency)
+                if len(period_count) == 0 or period_count[-1] != current_date.strftime('%Y-%m-%d %H:%M:%S.%f'):
+                    if current_date.date() == datetime.strptime(habit.get("start_date"), '%Y-%m-%d %H:%M:%S.%f').date():
+                        period_count.append(current_date.strftime('%Y-%m-%d %H:%M:%S.%f'))
+                    else:
+                        print(f"WARNING: You missed checking off {habit.get('name')}. Its Period expired without any checkoff :/ .")
+

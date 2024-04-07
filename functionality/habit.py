@@ -1,11 +1,11 @@
 from datetime import datetime, date
 from functionality.utility import frequency_change_confirmation, get_startdate, habit_delete_confirmation, habit_frequency, habit_name
-from functionality.db import add_habit, connect_db, delete_habit, habit_exists, update_frequency_alltables
+from functionality.db import add_habit, connect_db, delete_habit, fetch_all_habits, habit_exists, update_frequency_alltables
 
 
 # TODO: adjust database name end of line 6
 class Habit:
-    def __init__(self, name: str, description: str, frequency: str, start_date: str, database="main.db"):
+    def __init__(self, name: str, description: str, frequency: str, start_date: str, database="test.db"):
         # def __init__(self, name: str, description: str, frequency: str, start_date: date, database="main.db"):
         self.name = name
         self.description = description
@@ -36,9 +36,8 @@ class Habit:
         # habit_name()
         # habit_frequency()
         if not habit_exists(self.db, self.name):
-            add_habit(self.db, self.name, self.description, self.frequency, self.start_date)
-            print(f"\nThe habit '{self.name.capitalize()}' has been written to the db as a '{self.frequency.capitalize()}' "
-                  f"Habit starting from '{self.start_date}'.\n")
+            add_habit(self.db, self.name, self.description, self.frequency)
+            print(f"\nThe habit '{self.name.capitalize()}' has been written to the db as a '{self.frequency.capitalize()}'\n")
         else:
             print("\nHabit already exists, please edit the habit from the database or define another habit.\n")
 
@@ -56,16 +55,16 @@ class Habit:
         else: return
 
 #TODO: update_description -> not implemented yet
-    def change_description(self, new_description):
-        """
-        Changes the habit frequency.
-        """
+    # def change_description(self, new_description):
+    #     """
+    #     Changes the habit frequency.
+    #     """
 
-        self.description = new_description
-        if frequency_change_confirmation():
-            update_description(self.db, self.name, self.description)
-            print(f"\nThe description of the Habit '{self.name.capitalize()}' got changed to '{self.description}'.\n")
-        else: return
+    #     self.description = new_description
+    #     if frequency_change_confirmation():
+    #         update_description(self.db, self.name, self.description)
+    #         print(f"\nThe description of the Habit '{self.name.capitalize()}' got changed to '{self.description}'.\n")
+    #     else: return
 
 # delete_habit
     def delete(self):
@@ -85,7 +84,7 @@ class Habit:
 
     def checkoff_event_handler(self):
         """
-        gets triggered once the user tries to checkoff a habit
+        Gets triggered when the user tries to check off a habit.
         - first habit name needs to be choosen from all displayed habits
         - date_now() needs to be compared with the period_counter: Does the date lays inside an new, unchecked period?
         - if true: add checkoff_date to period_counter list (-> increment_streak())
@@ -97,16 +96,56 @@ class Habit:
                     -> else: continue
         """
 
-    def frequency_in_time_checker(self):
+
+    def check_period_missed():
         """
-        checks if a habit got a checkoff in time of the set period:
-            -> startdate + frequency -> next_deadline
-            -> if next_deadline = lays in the past
-                -> display fail message
-                -> add streak_count to streak_archive
+        Is called when the user starts the programm.
+        Usecase: Check if the user keeps track on checking off habits in the choosen time.
+        
+        - iterates through the entire database and checks for each habit:
+            - what is the period in which the habit should be checked off according to the start date and the frequency.
+            - Does the last entry in the period_counter lays in the current or last period?
+            - Is the last period unchecked but gone?
+
+            - if last period remained unchecked:
+                -> display fail message on CLI
+                -> append streak_count to streak_archive
                 -> reset streak_count
                 -> reset period_count
+
         """
+
+        current_date = datetime.now()
+    
+        # Fetch all habits from the database   
+        habits = fetch_all_habits()  
+
+        for habit in habits:
+        # Check current habit frequency and get period count
+            frequency = habit.get("frequency")
+            period_count = habit.get("period_count")
+
+            if frequency == "weekly":
+            # Calculate the start of the current period based on start_date from the habit
+                start_date = datetime.strptime(habit.get("start_date"), '%Y-%m-%d %H:%M:%S.%f')
+                period_length = 7  # For weekly frequency
+                weeks_passed = (current_date - start_date).days // period_length
+
+            # Check if the current date is in a new period
+            if len(period_count) == 0 or period_count[-1] != current_date.strftime('%Y-%m-%d %H:%M:%S.%f'):
+                if (current_date - start_date).days >= (weeks_passed * period_length):
+                    period_count.append(current_date.strftime('%Y-%m-%d %H:%M:%S.%f'))
+                else:
+                    print(f"WARNING: You missed checking off {habit.get('name')}. Its Period expired without any checkoff :/ .")
+                    
+
+            elif frequency == "daily":
+                # Check if the current date is in a new period (daily frequency)
+                if len(period_count) == 0 or period_count[-1] != current_date.strftime('%Y-%m-%d %H:%M:%S.%f'):
+                    if current_date.date() == datetime.strptime(habit.get("start_date"), '%Y-%m-%d %H:%M:%S.%f').date():
+                        period_count.append(current_date.strftime('%Y-%m-%d %H:%M:%S.%f'))
+                    else:
+                        print(f"WARNING: You missed checking off {habit.get('name')}. Its Period expired without any checkoff :/ .")
 
 
 

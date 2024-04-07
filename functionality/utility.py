@@ -18,9 +18,7 @@ from datetime import date
 
 def habit_name():
     """
-    Asks the user to enter the habit name.
-    The name of a habit is restricted to alphabets excluding whitespaces and special
-    characters.
+    Asks the user to enter the habit name and validates it.
     
     :return: Returns the name of the habit provided by the user.
     """
@@ -46,7 +44,7 @@ def get_startdate():
     return start_date
 
 
-def fetch_all_habits_to_select_one(db):
+def fetch_all_habits_to_select_one():
     """
     Displays all habit names from db for the user to choose from.
 
@@ -62,7 +60,7 @@ def fetch_all_habits_to_select_one(db):
         return qt.select("Please Select a Habit",
                          choices=sorted(list_of_all_habits)).ask().lower()
     else:
-        raise ValueError("No habit in database; Add a habit first to use this function")
+        raise ValueError("No habit in database. Add a habit first to use this function!")
 
         
 

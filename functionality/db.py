@@ -55,13 +55,15 @@ def create_tables(db):
                 name TEXT PRIMARY KEY,
                 description TEXT,
                 frequency TEXT,
-                start_date DATE
+                start_date DATE,
+                UNIQUE (name)
         )''')
 
 #create table called habit_analysisdata with fluid data
+        # rausgenommen: # id INTEGER PRIMARY KEY,
+
         cur.execute(''' CREATE TABLE IF NOT EXISTS habit_analysisdata (
-                id INTEGER PRIMARY KEY,
-                name TEXT,
+                name TEXT INTEGER PRIMARY KEY,
                 start_date DATE,
                 frequency TEXT,
                 period_count TEXT,
@@ -72,7 +74,7 @@ def create_tables(db):
 
         db.commit()
 
-def add_habit(db, name, description, frequency, start_date):
+def add_habit(db, name, description, frequency):
         """ 
         adds a new habit to the db with the input data of the user.
 
@@ -82,7 +84,7 @@ def add_habit(db, name, description, frequency, start_date):
         :param frequency: Frequency of the habit (daily or weekly)
         :param start_date: Time of habit creation
         """
-        # start_date = str(date.today())
+        start_date = str(date.today())
         cur = db.cursor()
         cur.execute("INSERT INTO habit_coredata (name, description, frequency, start_date) VALUES( ?, ?, ?, ?)", 
                     (name, description, frequency, start_date))
@@ -140,12 +142,25 @@ def habit_exists(db, name):
         :param db: Connected sqlite database
         :param name: Name of the habit
         """
-        cur = db.cursor()
-        query = """SELECT * FROM habit_coredata WHERE name = ?"""
-        cur.execute(query, (name,))
-        data = cur.fetchone()
-        return True if data is not None else False
+        conn = connect_db()
 
+        if conn is None:
+                return
+
+        try:
+                cursor = conn.cursor()
+
+                cur = db.cursor()
+                query = """SELECT * FROM habit_coredata WHERE name = ?"""
+                cur.execute(query, (name,))
+                data = cur.fetchone()
+                return True if data is not None else False
+        except sqlite3.Error as error:
+                print("Unable to read data from the database:", error)
+
+        finally: 
+                if conn: 
+                        conn.close()
 
 def delete_habit(db, name):
         """ 
@@ -170,6 +185,16 @@ def fetch_habits(db):
         data = cur.fetchall()
         return [i[0].capitalize() for i in set(data)] if len(data) > 0 else None
 
+def fetch_all_habits(db):
+        """ 
+        Gets all habit names from the db and lists them 
+
+        :param db: connected sqlite database
+        """
+        cur = db.cursor()
+        cur.execute("SELECT habit FROM habit_coredata")
+        data = cur.fetchall()
+        return data
 
 def get_habits_by_frequency(frequency):
     """Display all habits with either weekly OR daily frequency (depending on user input)"""
@@ -216,9 +241,11 @@ def update_frequency_alltables(db, name, new_frequency):
         :param new_frequency: new frequency that shall be applied
         """
         cur = db.cursor()
-        query = "UPDATE habit_coredata, analysis_data SET frequency = ? WHERE name = ?"
+        query1 = "UPDATE habit_coredata SET frequency = ? WHERE name = ?"
+        query2 = "UPDATE habit_analysisdata SET frequency = ? WHERE name = ?"
         data = (new_frequency, name)
-        cur.execute(query, data)
+        cur.execute(query1, data)
+        cur.execute(query2, data)
         db.commit()
         reset_analysisdata(db, name)
 
@@ -249,6 +276,8 @@ def update_frequency_alltables(db, name, new_frequency):
 #        update_frequency_analysisdata(db, name, new_frequency)
               
 
+# def update_description(): -> development paused.. maybe if time is left..
+      
 
 # TODO: - check_if_date_is_next_deadline(db, name, date, next_deadline) -> also triggers reminder, stores the period_coounter in the period_archive and resets period_count == 0 of missed
 

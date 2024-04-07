@@ -1,12 +1,13 @@
 # imports
 
 import questionary as qt
-# from tabulate import tabulate
+#  from tabulate import tabulate
 from datetime import date
 from functionality import utility
-from functionality.analyze import longest_streak_all_habits, longest_streak_given_habit
+from functionality.analyze import checkoff_event_handler, longest_streak_all_habits, longest_streak_given_habit
 from functionality.db import  connect_db, add_habit, all_habits_list, get_habits_by_frequency
 from functionality.habit import Habit
+from functionality.predefined import predefinedhabits, tablecreation
 from functionality.utility import description_change_confirmation, frequency_change_confirmation, habit_delete_confirmation, fetch_all_habits_to_select_one, get_startdate
 
 
@@ -14,13 +15,30 @@ from functionality.utility import description_change_confirmation, frequency_cha
 # This is the entry point of tha habit analysis tool. Here all the functionality is called that gets defined 
 # in the functionality subfolders.
 
+
+
+db_name = "test.db"
+conn = connect_db(db_name)
+
+if conn is not None:
+    print(f"Connected to database: {db_name}")
+
+    # Perform operations with your database connection
+    # Example: Get all habits from the database
+    all_habits_list()
+else:
+    print("Connection to the database failed.")
+
+tablecreation()
+predefinedhabits()
+
+
 # The following defines the CLI userflow:
 
 # Welcome message
 print("""
 *** Welcome to your habit tracker!***
 """)
-
 
 #  CLI implementation with qustionary
 def menu():
@@ -31,20 +49,20 @@ def menu():
 
  # Shows 6 choices for the user to choose from
     choice = qt.rawselect(
-        "What do you want to do? (Use arrow keys)",
+        "What do you want to do?",
         choices=[
             "Create/Delete a Habit",
             "Edit Habit Frequency",
-            "Edit Habit Description",
+            # "Edit Habit Description",
             "Check Off a Habit from the list",
             "See all stored Habits (All or Sort by Frequency)",
             "Analyze your Habits",
             "Exit"
         ]).ask()
 
-# Create or delete a habit
+    # Create or delete a habit
     if choice == "Create/Delete a Habit":
-        # user can choose from 3 sub choices
+        # User can choose from 3 sub choices
         second_choice = qt.select(
             "Would you like to Create or Delete a Habit?",
             choices=[
@@ -56,13 +74,9 @@ def menu():
         if second_choice == "Create a Habit":
             # db = connect_db()
             habit_name = utility.habit_name()
-            print("print:", habit_name)
             habit_description = utility.habit_description()
-            print("print:", habit_description)
             new_frequency = utility.habit_frequency()
-            print("print:", new_frequency)
             start_date = get_startdate()
-            print("print:", start_date)
             habit = Habit(habit_name, habit_description, new_frequency, str(start_date))
             habit.add()
             print("Yay! You started a new Habit track! | Habit: " +habit_name, "| Description: " +habit_description, "| Frequency: " +new_frequency, "| Tracked since: " +str(start_date))
@@ -74,7 +88,7 @@ def menu():
                  habit_name = fetch_all_habits_to_select_one()
             # throw ValueError if db is empty
             except ValueError:  
-                print("\nThe habit database is empty - please create a habit first.\n")
+                print("\nThe habit database is empty - create a habit first!\n")
             else:
                 habit = Habit(habit_name)
                 if habit_delete_confirmation(habit_name):
@@ -84,54 +98,55 @@ def menu():
 
             menu()
 
-        elif second_choice == "Back to Main Menu":
-            menu()
-        
-# Edit a habits frequency           
 
+        # Edit a habits frequency           
         elif second_choice == "Edit Habit Frequency":
             try:
                  habit_name = fetch_all_habits_to_select_one()
             # throw ValueError if there are no habits in the database
             except ValueError: 
-                print("\nThe database is empty - please create a habit first.\n")
+                print("\nThe database is empty - create a habit first!\n")
             else:
                 new_frequency = utility.habit_frequency()
                 if frequency_change_confirmation():
                     habit = Habit(habit_name, new_frequency)
                     habit.change_frequency()
                 else:
-                    print(f"\nThe frequency of {habit_name} was not updated.\n")
+                    print(f"\nThe frequency of {habit_name} was NOT updated.\n")
+            menu()
 
-#TODO: Ist habit description change defined?
-#       -> Koennte funktionieren, muss getestet werden.
     
-        elif second_choice == "Edit Habit Description":
-            try:
-                habit_name = fetch_all_habits_to_select_one()
-                 # throw ValueError if there are no habits in the database
-            except ValueError: 
-                print("\nThe database is empty - please create a habit first.\n")
-            else:
-                new_description = utility.habit_description()
-            if description_change_confirmation():
-                habit = Habit(habit_name, new_description)
-                habit.change_description()
+        # elif second_choice == "Edit Habit Description":
+        #     try:
+        #         habit_name = fetch_all_habits_to_select_one()
+        #          # throw ValueError if there are no habits in the database
+        #     except ValueError: 
+        #         print("\nThe database is empty - create a habit first!\n")
+        #     else:
+        #         new_description = utility.habit_description()
+        #     if description_change_confirmation():
+        #         habit = Habit(habit_name, new_description)
+        #         habit.change_description()
                 
-        # elif second_choice == "Check Off a habit from the list":
-        #     try: 
-        #        checkoff_event_handler() 
+        elif second_choice == "Check Off a Habit from the list":
+            try: 
+                habit_name = fetch_all_habits_to_select_one()
+                checkoff_event_handler(habit_name)
+
+            except ValueError:  # ValueError is raised when there are no habits in the database
+                print("\nPlease first create a habit to use the check-off function\n")
+
                 
         # TODO: add content
 
-        elif choice == "See all stored habits (All or Sorted by Periodicity)":
+        elif choice == "See all stored Habits (All or Sort by Frequency)":
         # user can choose from 3 sub choices
             second_choice = qt.select(
               "Please specify the intended habit selection:",
                 choices=[
                     "List ALL habits",
                     "List all DAILY habits",
-                    "List all WEEKLY habits"
+                    "List all WEEKLY habits",
                     "Back to Main Menu"
                 ]).ask()
         
@@ -151,9 +166,8 @@ def menu():
             elif second_choice == "Back to Main Menu":
                 menu()
             
-  
         
-        elif choice == "Analytics":
+        elif choice == "Analyze your Habits":
             second_choice = utility.analytics_choices()
             if second_choice == "Show the longest streak count from all habits":
                 try:
@@ -168,9 +182,7 @@ def menu():
 
             elif second_choice == "Show the longest streak count from a specific habit":
                 try:
-                    # display all habit names to choose from
                     habit_name = fetch_all_habits_to_select_one()
-                    # get longest streak of given habit
                     longest_streak = longest_streak_given_habit(habit_name)
                     print(f"The longest streaks in a row of the habit", {habit_name}, "are:", {longest_streak} )
 
@@ -188,6 +200,7 @@ def menu():
                 menu()        
                
 
+         
     elif choice == "Exit":
         # Goodbye message
         print("\nCiao my friend! - Stay successfull with keeping track on your habits! :)")  
