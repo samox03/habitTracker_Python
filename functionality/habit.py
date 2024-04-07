@@ -5,7 +5,7 @@ from functionality.db import add_habit, connect_db, delete_habit, fetch_all_habi
 
 # TODO: adjust database name end of line 6
 class Habit:
-    def __init__(self, name: str, description: str, frequency: str, start_date: str, database="test.db"):
+    def __init__(self, name: str, description: str, frequency: str, start_date: str, database="main.db"):
         # def __init__(self, name: str, description: str, frequency: str, start_date: date, database="main.db"):
         self.name = name
         self.description = description
