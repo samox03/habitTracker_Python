@@ -51,6 +51,8 @@ Pytest - For testing functions:
 
     pip install -U pytest
 
+Also change the Database from main.db to test.db.
+
 ## How To Run the Program
 Upon completing the installation of the necessary dependencies, download the files from this repository and store them in a separate folder. Access your terminal and navigate to the downloaded folder. Input the following command to run the program:
 
@@ -75,7 +77,7 @@ Follow the instructions on your CLI after starting the programm. For navigation 
 The user can edit the descriptiption or the habit frequency.
 
 ### Check Off a habit
-The user is asked to check off a habit at least once in the predefined periodicity. He can do so by selecting this option from the main menu. A habit can just be checked off once in a period. The checking off of a habit gets registered by the period_counter by +1. The period counter resets to 0 if a habit gets missed in the preset period. In the period_archive the highest value of the period counter gets stored.
+The user is asked to check off a habit at least once in the predefined periodicity. He can do so by selecting this option from the main menu. A habit can just be checked off once in a period. The checking off of a habit gets registered by the period_count by +1. The period count resets to 0 if a habit gets missed in the preset period. In the period_archive the highest value of the period counter gets stored in a list. Like that the trackking data can be analyzed later.
 
 ### Show Habits 
 Shows a table of all the stored habits along with their information of Name, Description, Periodicity.
@@ -84,6 +86,6 @@ Shows a table of all the stored habits along with their information of Name, Des
 The following operations can get analysed by the habit tracker:
   - return a list of all currently tracked habits.
 	- return a list of all habits with the same frequency (daily, weekly).
-	- return the longest run streak of all defined habits (→ checks for highest nr in the streak_count among all habits)
-	- return the longest streak for a given habit (→ checks the streak_archive of a given habit)
+	- return the longest run streak of all defined habits (→ checks the streak_archive and streak_count for the highest nr among all habits)
+	- return the longest streak for a given habit (→ checks the streak_archive and streak_count of a given habit)
 
