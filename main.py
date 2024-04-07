@@ -5,10 +5,10 @@ import questionary as qt
 from datetime import date
 from functionality import utility
 from functionality.analyze import checkoff_event_handler, longest_streak_all_habits, longest_streak_given_habit
-from functionality.db import  connect_db, add_habit, all_habits_list, get_habits_by_frequency
+from functionality.db import  connect_db, all_habits_list, get_habits_by_frequency
 from functionality.habit import Habit
 from functionality.predefined import predefinedhabits, tablecreation
-from functionality.utility import description_change_confirmation, frequency_change_confirmation, habit_delete_confirmation, fetch_all_habits_to_select_one, get_startdate
+from functionality.utility import frequency_change_confirmation, habit_delete_confirmation, fetch_all_habits_to_select_one, get_startdate
 
 
 
@@ -17,7 +17,7 @@ from functionality.utility import description_change_confirmation, frequency_cha
 
 
 
-db_name = "test.db"
+db_name = "main.db"
 conn = connect_db(db_name)
 
 if conn is not None:
